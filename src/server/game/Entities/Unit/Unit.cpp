@@ -295,7 +295,7 @@ Unit::~Unit()
 void Unit::Update(uint32 p_time)
 {
 #ifdef ELUNA
-    elunaEvents->Update(p_time);
+    GetMap()->GetEluna()->eventMgr->Update(p_time, this);
 #endif
 
     // WARNING! Order of execution here is important, do not change.
