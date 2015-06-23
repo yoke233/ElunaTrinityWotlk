@@ -11779,7 +11779,7 @@ void Unit::SetInCombatState(bool PvP, Unit* enemy)
 
 #ifdef ELUNA
     if (Player* player = this->ToPlayer())
-        sEluna->OnPlayerEnterCombat(player, enemy);
+        player->GetMap()->GetEluna()->OnPlayerEnterCombat(player, enemy);
 #endif
 }
 
@@ -11825,7 +11825,7 @@ void Unit::ClearInCombat()
 
 #ifdef ELUNA
     if (Player* player = this->ToPlayer())
-        sEluna->OnPlayerLeaveCombat(player);
+        player->GetMap()->GetEluna()->OnPlayerLeaveCombat(player);
 #endif
 }
 
