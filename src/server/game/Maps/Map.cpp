@@ -55,6 +55,11 @@ Map::~Map()
 {
     sScriptMgr->OnDestroyMap(this);
 
+#ifdef ELUNA
+    delete E;
+    E = NULL;
+#endif
+
     UnloadAll();
 
     while (!i_worldObjects.empty())
@@ -250,6 +255,11 @@ i_scriptLock(false), _defaultLight(GetDefaultMapLight(id))
 
     //lets initialize visibility distance for map
     Map::InitVisibilityDistance();
+
+#ifdef ELUNA
+    E = new Eluna(this);
+    E->RunScripts();
+#endif
 
     sScriptMgr->OnCreateMap(this);
 }

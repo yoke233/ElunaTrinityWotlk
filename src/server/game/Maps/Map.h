@@ -35,6 +35,9 @@
 #include <bitset>
 #include <list>
 
+#ifdef ELUNA
+class Eluna;
+#endif
 class Unit;
 class WorldPacket;
 class InstanceScript;
@@ -357,6 +360,10 @@ class Map : public GridRefManager<NGridType>
             GetZoneAndAreaIdByAreaFlag(zoneid, areaid, GetAreaFlag(x, y, z), GetId());
         }
 
+#ifdef ELUNA
+        Eluna* GetEluna() { return E; }
+#endif
+
         void MoveAllCreaturesInMoveList();
         void MoveAllGameObjectsInMoveList();
         void MoveAllDynamicObjectsInMoveList();
@@ -653,6 +660,10 @@ class Map : public GridRefManager<NGridType>
 
         ZoneDynamicInfoMap _zoneDynamicInfo;
         uint32 _defaultLight;
+
+#ifdef ELUNA
+        Eluna* E;
+#endif
 };
 
 enum InstanceResetMethod
