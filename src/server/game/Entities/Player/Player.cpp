@@ -2128,6 +2128,7 @@ void Player::ToggleAFK()
 
 void Player::ToggleDND()
 {
+    this->
     ToggleFlag(PLAYER_FLAGS, PLAYER_FLAGS_DND);
 }
 
