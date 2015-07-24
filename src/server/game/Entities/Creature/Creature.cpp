@@ -186,7 +186,7 @@ void Creature::AddToWorld()
         if (IsVehicle())
             GetVehicleKit()->Install();
 #ifdef ELUNA
-        sEluna->OnAddToWorld(this);
+        ElunaDo(this)->OnAddToWorld(this);
 #endif
     }
 }
@@ -196,7 +196,7 @@ void Creature::RemoveFromWorld()
     if (IsInWorld())
     {
 #ifdef ELUNA
-        sEluna->OnRemoveFromWorld(this);
+        ElunaDo(this)->OnRemoveFromWorld(this);
 #endif
         if (GetZoneScript())
             GetZoneScript()->OnCreatureRemove(this);

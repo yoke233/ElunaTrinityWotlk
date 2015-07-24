@@ -1115,7 +1115,7 @@ void WorldObject::CleanupsBeforeDelete(bool /*finalCleanup*/)
 void WorldObject::Update (uint32 time_diff)
 {
 #ifdef ELUNA
-    GetMap()->GetEluna()->eventMgr->Update(time_diff, this);
+    ElunaDo(this)->GetEventMgr()->Update(time_diff, this);
 #endif
 }
 
@@ -1825,7 +1825,7 @@ void WorldObject::ResetMap()
 
 #ifdef ELUNA
     // Removes all timed events related to the object from map on map change
-    m_currMap->GetEluna()->eventMgr->Delete(GetGUID());
+    ElunaDo(this)->GetEventMgr()->Delete(GetGUID());
 #endif
 
     m_currMap = NULL;

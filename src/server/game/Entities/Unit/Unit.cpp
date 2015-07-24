@@ -317,7 +317,7 @@ bool Unit::IsInCombatWith(Unit const* who) const
 void Unit::Update(uint32 p_time)
 {
 #ifdef ELUNA
-    GetMap()->GetEluna()->eventMgr->Update(p_time, this);
+    ElunaDo(this)->GetEventMgr()->Update(p_time, this);
 #endif
 
     // WARNING! Order of execution here is important, do not change.
@@ -11828,7 +11828,7 @@ void Unit::SetInCombatState(bool PvP, Unit* enemy)
 
 #ifdef ELUNA
     if (Player* player = this->ToPlayer())
-        player->GetMap()->GetEluna()->OnPlayerEnterCombat(player, enemy);
+        ElunaDo(player)->OnPlayerEnterCombat(player, enemy);
 #endif
 }
 
@@ -11874,7 +11874,7 @@ void Unit::ClearInCombat()
 
 #ifdef ELUNA
     if (Player* player = this->ToPlayer())
-        player->GetMap()->GetEluna()->OnPlayerLeaveCombat(player);
+        ElunaDo(player)->OnPlayerLeaveCombat(player);
 #endif
 }
 

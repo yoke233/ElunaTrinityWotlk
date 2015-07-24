@@ -289,7 +289,7 @@ bool ChatHandler::ExecuteCommandInTable(ChatCommand* table, const char* text, st
             if (!ExecuteCommandInTable(table[i].ChildCommands, text, fullcmd))
             {
 #ifdef ELUNA
-                if (!sEluna->OnCommand(GetSession() ? GetSession()->GetPlayer() : NULL, oldtext))
+                if (!sEluna("OnCommand")->OnCommand(GetSession() ? GetSession()->GetPlayer() : NULL, oldtext))
                     return true;
 #endif
 
@@ -440,7 +440,7 @@ bool ChatHandler::ParseCommands(char const* text)
     if (!ExecuteCommandInTable(getCommandTable(), text, fullcmd))
     {
 #ifdef ELUNA
-        if (!sEluna->OnCommand(GetSession() ? GetSession()->GetPlayer() : NULL, text))
+        if (!sEluna("OnCommand")->OnCommand(GetSession() ? GetSession()->GetPlayer() : NULL, text))
             return true;
 #endif
 

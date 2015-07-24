@@ -5017,7 +5017,7 @@ void Player::ResurrectPlayer(float restore_percent, bool applySickness)
     UpdateObjectVisibility();
 
 #ifdef ELUNA
-    sEluna->OnResurrect(this);
+    sEluna("OnResurrect")->OnResurrect(this);
 #endif
 
     if (!applySickness)
@@ -11894,7 +11894,7 @@ InventoryResult Player::CanUseItem(ItemTemplate const* proto) const
             return EQUIP_ERR_NONE;
 
 #ifdef ELUNA
-    InventoryResult eres = sEluna->OnCanUseItem(this, proto->ItemId);
+    InventoryResult eres = sEluna("OnCanUseItem")->OnCanUseItem(this, proto->ItemId);
     if (eres != EQUIP_ERR_OK)
         return eres;
 #endif
@@ -12328,7 +12328,7 @@ Item* Player::EquipItem(uint16 pos, Item* pItem, bool update)
         ApplyEquipCooldown(pItem2);
 
 #ifdef ELUNA
-        sEluna->OnEquip(this, pItem2, bag, slot);
+        sEluna("OnEquip")->OnEquip(this, pItem2, bag, slot);
 #endif
         return pItem2;
     }
@@ -12338,7 +12338,7 @@ Item* Player::EquipItem(uint16 pos, Item* pItem, bool update)
     UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, pItem->GetEntry(), slot);
 
 #ifdef ELUNA
-        sEluna->OnEquip(this, pItem, bag, slot);
+        sEluna("OnEquip")->OnEquip(this, pItem, bag, slot);
 #endif
     return pItem;
 }
@@ -12363,7 +12363,7 @@ void Player::QuickEquipItem(uint16 pos, Item* pItem)
         UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, pItem->GetEntry(), slot);
 
 #ifdef ELUNA
-        sEluna->OnEquip(this, pItem, (pos >> 8), slot);
+        sEluna("OnEquip")->OnEquip(this, pItem, (pos >> 8), slot);
 #endif
     }
 }
@@ -24620,7 +24620,7 @@ void Player::StoreLootItem(uint8 lootSlot, Loot* loot)
             loot->DeleteLootItemFromContainerItemDB(item->itemid);
 
 #ifdef ELUNA
-        sEluna->OnLootItem(this, newitem, item->count, this->GetLootGUID());
+        ElunaDo(this)->OnLootItem(this, newitem, item->count, this->GetLootGUID());
 #endif
     }
     else
@@ -25056,7 +25056,7 @@ void Player::LearnTalent(uint32 talentId, uint32 talentRank)
     SetFreeTalentPoints(CurTalentPoints - (talentRank - curtalent_maxrank + 1));
 
 #ifdef ELUNA
-    sEluna->OnLearnTalents(this, talentId, talentRank, spellid);
+    sEluna("OnLearnTalents")->OnLearnTalents(this, talentId, talentRank, spellid);
 #endif
 }
 

@@ -145,7 +145,7 @@ void GameObject::AddToWorld()
         WorldObject::AddToWorld();
 
 #ifdef ELUNA
-        sEluna->OnAddToWorld(this);
+        ElunaDo(this)->OnAddToWorld(this);
 #endif
     }
 }
@@ -156,7 +156,7 @@ void GameObject::RemoveFromWorld()
     if (IsInWorld())
     {
 #ifdef ELUNA
-        sEluna->OnRemoveFromWorld(this);
+        ElunaDo(this)->OnRemoveFromWorld(this);
 #endif
         if (m_zoneScript)
             m_zoneScript->OnGameObjectRemove(this);

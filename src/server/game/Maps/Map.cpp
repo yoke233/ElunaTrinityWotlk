@@ -656,6 +656,8 @@ void Map::VisitNearbyCellsOf(WorldObject* obj, TypeContainerVisitor<Trinity::Obj
 
 void Map::Update(const uint32 t_diff)
 {
+    GetEluna()->current_thread_id = std::this_thread::get_id();
+
     _dynamicTree.update(t_diff);
     /// update worldsessions for existing players
     for (m_mapRefIter = m_mapRefManager.begin(); m_mapRefIter != m_mapRefManager.end(); ++m_mapRefIter)
@@ -731,6 +733,8 @@ void Map::Update(const uint32 t_diff)
         ProcessRelocationNotifies(t_diff);
 
     sScriptMgr->OnMapUpdate(this, t_diff);
+
+    GetEluna()->current_thread_id = Eluna::main_thread_id;
 }
 
 struct ResetNotifier
@@ -2625,9 +2629,13 @@ void Map::AddObjectToRemoveList(WorldObject* obj)
 
 #ifdef ELUNA
     if (Creature* creature = obj->ToCreature())
-        sEluna->OnRemove(creature);
+    {
+        ElunaDo(creature)->OnRemove(creature);
+    }
     else if (GameObject* gameobject = obj->ToGameObject())
-        sEluna->OnRemove(gameobject);
+    {
+        ElunaDo(gameobject)->OnRemove(gameobject);
+    }
 #endif
 
     obj->CleanupsBeforeDelete(false);                            // remove or simplify at least cross referenced links
