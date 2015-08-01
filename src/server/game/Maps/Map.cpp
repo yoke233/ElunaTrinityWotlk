@@ -3096,7 +3096,7 @@ void InstanceMap::CreateInstanceData(bool load)
     bool isElunaAI = false;
 
 #ifdef ELUNA
-    i_data = sEluna->GetInstanceData(this);
+    i_data = GetEluna()->GetInstanceData(this);
     if (i_data)
         isElunaAI = true;
 #endif
