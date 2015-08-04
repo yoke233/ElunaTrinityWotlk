@@ -397,8 +397,4 @@ void MapManager::FreeInstanceId(uint32 instanceId)
 
     _instanceIds[instanceId] = false;
     sAchievementMgr->OnInstanceDestroyed(instanceId);
-
-#ifdef ELUNA
-    sEluna("FreeInstanceId")->FreeInstanceId(instanceId);
-#endif
 }

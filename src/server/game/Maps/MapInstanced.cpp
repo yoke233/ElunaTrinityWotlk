@@ -26,6 +26,9 @@
 #include "World.h"
 #include "Group.h"
 #include "Player.h"
+#ifdef ELUNA
+#include "LuaEngine.h"
+#endif
 
 MapInstanced::MapInstanced(uint32 id, time_t expiry) : Map(id, expiry, 0, DUNGEON_DIFFICULTY_NORMAL)
 {
@@ -268,7 +271,12 @@ bool MapInstanced::DestroyInstance(InstancedMaps::iterator &itr)
 
     // Free up the instance id and allow it to be reused for bgs and arenas (other instances are handled in the InstanceSaveMgr)
     if (itr->second->IsBattlegroundOrArena())
+    {
+#ifdef ELUNA
+        itr->second->GetEluna()->FreeInstanceId(itr->second->GetInstanceId());
+#endif
         sMapMgr->FreeInstanceId(itr->second->GetInstanceId());
+    }
 
     // erase map
     delete itr->second;

@@ -31,6 +31,9 @@
 #include "World.h"
 #include "Group.h"
 #include "InstanceScript.h"
+#ifdef ELUNA
+#include "LuaEngine.h"
+#endif
 
 uint16 InstanceSaveManager::ResetTimeDelay[] = {3600, 900, 300, 60};
 
@@ -560,6 +563,10 @@ void InstanceSaveManager::_ResetInstance(uint32 mapid, uint32 instanceId)
         Map::DeleteRespawnTimesInDB(mapid, instanceId);
 
     // Free up the instance id and allow it to be reused
+#ifdef ELUNA
+    if (iMap)
+        iMap->GetEluna()->FreeInstanceId(instanceId);
+#endif
     sMapMgr->FreeInstanceId(instanceId);
 }
 
