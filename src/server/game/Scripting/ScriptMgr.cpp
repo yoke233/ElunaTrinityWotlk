@@ -574,7 +574,7 @@ void ScriptMgr::OnCreateMap(Map* map)
     ASSERT(map);
 
 #ifdef ELUNA
-    sEluna("OnCreate_map")->OnCreate(map);
+    map->GetEluna()->OnCreate(map);
 #endif
 
     SCR_MAP_BGN(WorldMapScript, map, itr, end, entry, IsWorldMap);
@@ -595,7 +595,7 @@ void ScriptMgr::OnDestroyMap(Map* map)
     ASSERT(map);
 
 #ifdef ELUNA
-    sEluna("OnDestroy_map")->OnDestroy(map);
+    map->GetEluna()->OnDestroy(map);
 #endif
 
     SCR_MAP_BGN(WorldMapScript, map, itr, end, entry, IsWorldMap);
@@ -1029,10 +1029,13 @@ uint32 ScriptMgr::GetDialogStatus(Player* player, GameObject* go)
     ASSERT(player);
     ASSERT(go);
 #ifdef ELUNA
-    if (uint32 dialogid = sEluna("GetDialogStatus")->GetDialogStatus(player, go))
+    if (Map* map = player->FindMap())
     {
-        player->PlayerTalkClass->ClearMenus();
-        return dialogid;
+        if (uint32 dialogid = map->GetEluna()->GetDialogStatus(player, go))
+        {
+            player->PlayerTalkClass->ClearMenus();
+            return dialogid;
+        }
     }
 #endif
 
@@ -1226,7 +1229,7 @@ void ScriptMgr::OnInstall(Vehicle* veh)
     ASSERT(veh);
     ASSERT(veh->GetBase()->GetTypeId() == TYPEID_UNIT);
 #ifdef ELUNA
-    sEluna("OnInstall")->OnInstall(veh);
+    ElunaDo(veh->GetBase())->OnInstall(veh);
 #endif
 
     GET_SCRIPT(VehicleScript, veh->GetBase()->ToCreature()->GetScriptId(), tmpscript);
@@ -1238,7 +1241,7 @@ void ScriptMgr::OnUninstall(Vehicle* veh)
     ASSERT(veh);
     ASSERT(veh->GetBase()->GetTypeId() == TYPEID_UNIT);
 #ifdef ELUNA
-    sEluna("OnUninstall")->OnUninstall(veh);
+    ElunaDo(veh->GetBase())->OnUninstall(veh);
 #endif
 
     GET_SCRIPT(VehicleScript, veh->GetBase()->ToCreature()->GetScriptId(), tmpscript);
@@ -1260,7 +1263,7 @@ void ScriptMgr::OnInstallAccessory(Vehicle* veh, Creature* accessory)
     ASSERT(veh->GetBase()->GetTypeId() == TYPEID_UNIT);
     ASSERT(accessory);
 #ifdef ELUNA
-    sEluna("OnInstallAccessory")->OnInstallAccessory(veh, accessory);
+    ElunaDo(veh->GetBase())->OnInstallAccessory(veh, accessory);
 #endif
 
     GET_SCRIPT(VehicleScript, veh->GetBase()->ToCreature()->GetScriptId(), tmpscript);
@@ -1273,7 +1276,7 @@ void ScriptMgr::OnAddPassenger(Vehicle* veh, Unit* passenger, int8 seatId)
     ASSERT(veh->GetBase()->GetTypeId() == TYPEID_UNIT);
     ASSERT(passenger);
 #ifdef ELUNA
-    sEluna("OnAddPassenger")->OnAddPassenger(veh, passenger, seatId);
+    ElunaDo(veh->GetBase())->OnAddPassenger(veh, passenger, seatId);
 #endif
 
     GET_SCRIPT(VehicleScript, veh->GetBase()->ToCreature()->GetScriptId(), tmpscript);
@@ -1286,7 +1289,7 @@ void ScriptMgr::OnRemovePassenger(Vehicle* veh, Unit* passenger)
     ASSERT(veh->GetBase()->GetTypeId() == TYPEID_UNIT);
     ASSERT(passenger);
 #ifdef ELUNA
-    sEluna("OnRemovePassenger")->OnRemovePassenger(veh, passenger);
+    ElunaDo(veh->GetBase())->OnRemovePassenger(veh, passenger);
 #endif
 
     GET_SCRIPT(VehicleScript, veh->GetBase()->ToCreature()->GetScriptId(), tmpscript);
