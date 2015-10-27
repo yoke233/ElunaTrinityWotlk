@@ -85,6 +85,7 @@ include_directories(
   ${CMAKE_SOURCE_DIR}/src/server/game/Globals
   ${CMAKE_SOURCE_DIR}/src/server/game/Grids
   ${CMAKE_SOURCE_DIR}/src/server/game/Grids/Cells
+  ${CMAKE_SOURCE_DIR}/src/server/game/Groups
   ${CMAKE_SOURCE_DIR}/src/server/game/Handlers
   ${CMAKE_SOURCE_DIR}/src/server/game/Instances
   ${CMAKE_SOURCE_DIR}/src/server/game/Loot
