@@ -3816,7 +3816,8 @@ bool Player::AddSpell(uint32 spellId, bool active, bool learning, bool dependent
                     continue;
 
                 ///@todo: confirm if rogues start with lockpicking skill at level 1 but only receive the spell to use it at level 16
-                if ((_spell_idx->second->AutolearnType == SKILL_LINE_ABILITY_LEARNED_ON_SKILL_LEARN && !HasSkill(pSkill->id)) || (pSkill->id == SKILL_LOCKPICKING && _spell_idx->second->max_value == 0))
+                // Also added for runeforging. It's already confirmed this happens upon learning for Death Knights, not from character creation.
+                if ((_spell_idx->second->AutolearnType == SKILL_LINE_ABILITY_LEARNED_ON_SKILL_LEARN && !HasSkill(pSkill->id)) || ((pSkill->id == SKILL_LOCKPICKING || pSkill->id == SKILL_RUNEFORGING) && _spell_idx->second->max_value == 0))
                     LearnDefaultSkill(pSkill->id, 0);
 
                 if (pSkill->id == SKILL_MOUNTS && !Has310Flyer(false))
@@ -5016,7 +5017,7 @@ void Player::ResurrectPlayer(float restore_percent, bool applySickness)
     UpdateObjectVisibility();
 
 #ifdef ELUNA
-    sEluna->OnResurrect(this);
+    sEluna("OnResurrect")->OnResurrect(this);
 #endif
 
     if (!applySickness)
@@ -7273,7 +7274,7 @@ uint32 Player::GetZoneIdFromDB(ObjectGuid guid)
         // stored zone is zero, use generic and slow zone detection
         stmt = CharacterDatabase.GetPreparedStatement(CHAR_SEL_CHAR_POSITION_XYZ);
         stmt->setUInt32(0, guidLow);
-        PreparedQueryResult result = CharacterDatabase.Query(stmt);
+        result = CharacterDatabase.Query(stmt);
 
         if (!result)
             return 0;
@@ -11893,7 +11894,7 @@ InventoryResult Player::CanUseItem(ItemTemplate const* proto) const
             return EQUIP_ERR_NONE;
 
 #ifdef ELUNA
-    InventoryResult eres = sEluna->OnCanUseItem(this, proto->ItemId);
+    InventoryResult eres = sEluna("OnCanUseItem")->OnCanUseItem(this, proto->ItemId);
     if (eres != EQUIP_ERR_OK)
         return eres;
 #endif
@@ -12327,7 +12328,7 @@ Item* Player::EquipItem(uint16 pos, Item* pItem, bool update)
         ApplyEquipCooldown(pItem2);
 
 #ifdef ELUNA
-        sEluna->OnEquip(this, pItem2, bag, slot);
+        sEluna("OnEquip")->OnEquip(this, pItem2, bag, slot);
 #endif
         return pItem2;
     }
@@ -12337,7 +12338,7 @@ Item* Player::EquipItem(uint16 pos, Item* pItem, bool update)
     UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, pItem->GetEntry(), slot);
 
 #ifdef ELUNA
-        sEluna->OnEquip(this, pItem, bag, slot);
+        sEluna("OnEquip")->OnEquip(this, pItem, bag, slot);
 #endif
     return pItem;
 }
@@ -12362,7 +12363,7 @@ void Player::QuickEquipItem(uint16 pos, Item* pItem)
         UpdateAchievementCriteria(ACHIEVEMENT_CRITERIA_TYPE_EQUIP_EPIC_ITEM, pItem->GetEntry(), slot);
 
 #ifdef ELUNA
-        sEluna->OnEquip(this, pItem, (pos >> 8), slot);
+        sEluna("OnEquip")->OnEquip(this, pItem, (pos >> 8), slot);
 #endif
     }
 }
@@ -18029,8 +18030,8 @@ void Player::_LoadInventory(PreparedQueryResult result, uint32 timeDiff)
                     }
                     else if (invalidBagMap.find(bagGuid) != invalidBagMap.end())
                     {
-                        std::map<uint32, Item*>::iterator itr = invalidBagMap.find(bagGuid);
-                        if (std::find(problematicItems.begin(), problematicItems.end(), itr->second) != problematicItems.end())
+                        std::map<uint32, Item*>::iterator invalidBagItr = invalidBagMap.find(bagGuid);
+                        if (std::find(problematicItems.begin(), problematicItems.end(), invalidBagItr->second) != problematicItems.end())
                             err = EQUIP_ERR_INT_BAG_ERROR;
                     }
                     else
@@ -24619,7 +24620,7 @@ void Player::StoreLootItem(uint8 lootSlot, Loot* loot)
             loot->DeleteLootItemFromContainerItemDB(item->itemid);
 
 #ifdef ELUNA
-        sEluna->OnLootItem(this, newitem, item->count, this->GetLootGUID());
+        ElunaDo(this)->OnLootItem(this, newitem, item->count, this->GetLootGUID());
 #endif
     }
     else
@@ -25055,7 +25056,7 @@ void Player::LearnTalent(uint32 talentId, uint32 talentRank)
     SetFreeTalentPoints(CurTalentPoints - (talentRank - curtalent_maxrank + 1));
 
 #ifdef ELUNA
-    sEluna->OnLearnTalents(this, talentId, talentRank, spellid);
+    sEluna("OnLearnTalents")->OnLearnTalents(this, talentId, talentRank, spellid);
 #endif
 }
 

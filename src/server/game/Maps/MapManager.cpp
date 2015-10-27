@@ -36,6 +36,9 @@
 #include "WorldSession.h"
 #include "Opcodes.h"
 #include "AchievementMgr.h"
+#ifdef ELUNA
+#include "LuaEngine.h"
+#endif
 
 MapManager::MapManager()
 {

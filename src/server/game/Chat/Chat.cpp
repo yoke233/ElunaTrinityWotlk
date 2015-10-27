@@ -19,7 +19,6 @@
 #include "Common.h"
 #include "ObjectMgr.h"
 #include "World.h"
-#include "WorldPacket.h"
 #include "WorldSession.h"
 #include "DatabaseEnv.h"
 
@@ -29,9 +28,7 @@
 #include "GridNotifiersImpl.h"
 #include "Language.h"
 #include "Log.h"
-#include "Opcodes.h"
 #include "Player.h"
-#include "UpdateMask.h"
 #include "ScriptMgr.h"
 #include "ChatLink.h"
 #ifdef ELUNA
@@ -292,7 +289,7 @@ bool ChatHandler::ExecuteCommandInTable(ChatCommand* table, const char* text, st
             if (!ExecuteCommandInTable(table[i].ChildCommands, text, fullcmd))
             {
 #ifdef ELUNA
-                if (!sEluna->OnCommand(GetSession() ? GetSession()->GetPlayer() : NULL, oldtext))
+                if (!sEluna("OnCommand")->OnCommand(GetSession() ? GetSession()->GetPlayer() : NULL, oldtext))
                     return true;
 #endif
 
@@ -443,7 +440,7 @@ bool ChatHandler::ParseCommands(char const* text)
     if (!ExecuteCommandInTable(getCommandTable(), text, fullcmd))
     {
 #ifdef ELUNA
-        if (!sEluna->OnCommand(GetSession() ? GetSession()->GetPlayer() : NULL, text))
+        if (!sEluna("OnCommand")->OnCommand(GetSession() ? GetSession()->GetPlayer() : NULL, text))
             return true;
 #endif
 

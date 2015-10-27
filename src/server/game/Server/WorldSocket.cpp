@@ -19,13 +19,13 @@
 #include "WorldSocket.h"
 #include "BigNumber.h"
 #include "Opcodes.h"
-#include "Player.h"
 #include "ScriptMgr.h"
 #include "SHA1.h"
 #include "PacketLog.h"
 #ifdef ELUNA
 #include "LuaEngine.h"
 #endif
+
 #include <memory>
 
 using boost::asio::ip::tcp;
@@ -512,6 +512,8 @@ void WorldSocket::SendAuthResponseError(uint8 code)
 
 bool WorldSocket::HandlePing(WorldPacket& recvPacket)
 {
+    using namespace std::chrono;
+
     uint32 ping;
     uint32 latency;
 

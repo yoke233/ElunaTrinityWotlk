@@ -36,7 +36,6 @@
 #include "LootMgr.h"
 #include "MoveSpline.h"
 #include "ObjectMgr.h"
-#include "Opcodes.h"
 #include "Player.h"
 #include "PoolMgr.h"
 #include "QuestDef.h"
@@ -178,9 +177,6 @@ void Creature::AddToWorld()
     ///- Register the creature for guid lookup
     if (!IsInWorld())
     {
-#ifdef ELUNA
-        sEluna->OnAddToWorld(this);
-#endif
         if (GetZoneScript())
             GetZoneScript()->OnCreatureCreate(this);
         sObjectAccessor->AddObject(this);
@@ -189,6 +185,9 @@ void Creature::AddToWorld()
         AIM_Initialize();
         if (IsVehicle())
             GetVehicleKit()->Install();
+#ifdef ELUNA
+        ElunaDo(this)->OnAddToWorld(this);
+#endif
     }
 }
 
@@ -197,7 +196,7 @@ void Creature::RemoveFromWorld()
     if (IsInWorld())
     {
 #ifdef ELUNA
-        sEluna->OnRemoveFromWorld(this);
+        ElunaDo(this)->OnRemoveFromWorld(this);
 #endif
         if (GetZoneScript())
             GetZoneScript()->OnCreatureRemove(this);
@@ -2563,7 +2562,7 @@ void Creature::UpdateMovementFlags()
         return;
 
     // Set the movement flags if the creature is in that mode. (Only fly if actually in air, only swim if in water, etc)
-    float ground = GetMap()->GetHeight(GetPositionX(), GetPositionY(), GetPositionZMinusOffset());
+    float ground = GetMap()->GetHeight(GetPhaseMask(), GetPositionX(), GetPositionY(), GetPositionZMinusOffset());
 
     bool isInAir = (G3D::fuzzyGt(GetPositionZMinusOffset(), ground + 0.05f) || G3D::fuzzyLt(GetPositionZMinusOffset(), ground - 0.05f)); // Can be underground too, prevent the falling
 

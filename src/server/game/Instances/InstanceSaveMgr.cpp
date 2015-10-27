@@ -31,6 +31,9 @@
 #include "World.h"
 #include "Group.h"
 #include "InstanceScript.h"
+#ifdef ELUNA
+#include "LuaEngine.h"
+#endif
 
 uint16 InstanceSaveManager::ResetTimeDelay[] = {3600, 900, 300, 60};
 
@@ -560,6 +563,10 @@ void InstanceSaveManager::_ResetInstance(uint32 mapid, uint32 instanceId)
         Map::DeleteRespawnTimesInDB(mapid, instanceId);
 
     // Free up the instance id and allow it to be reused
+#ifdef ELUNA
+    if (iMap)
+        iMap->GetEluna()->FreeInstanceId(instanceId);
+#endif
     sMapMgr->FreeInstanceId(instanceId);
 }
 
@@ -660,19 +667,19 @@ void InstanceSaveManager::_ResetOrWarnAll(uint32 mapid, Difficulty difficulty, b
     /// @todo delete creature/gameobject respawn times even if the maps are not loaded
 }
 
-uint32 InstanceSaveManager::GetNumBoundPlayersTotal()
+uint32 InstanceSaveManager::GetNumBoundPlayersTotal() const
 {
     uint32 ret = 0;
-    for (InstanceSaveHashMap::iterator itr = m_instanceSaveById.begin(); itr != m_instanceSaveById.end(); ++itr)
+    for (InstanceSaveHashMap::const_iterator itr = m_instanceSaveById.begin(); itr != m_instanceSaveById.end(); ++itr)
         ret += itr->second->GetPlayerCount();
 
     return ret;
 }
 
-uint32 InstanceSaveManager::GetNumBoundGroupsTotal()
+uint32 InstanceSaveManager::GetNumBoundGroupsTotal() const
 {
     uint32 ret = 0;
-    for (InstanceSaveHashMap::iterator itr = m_instanceSaveById.begin(); itr != m_instanceSaveById.end(); ++itr)
+    for (InstanceSaveHashMap::const_iterator itr = m_instanceSaveById.begin(); itr != m_instanceSaveById.end(); ++itr)
         ret += itr->second->GetGroupCount();
 
     return ret;

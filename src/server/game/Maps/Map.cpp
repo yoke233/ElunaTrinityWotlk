@@ -330,7 +330,15 @@ void Map::SwitchGridContainers(Creature* obj, bool on)
     if (!IsGridLoaded(GridCoord(cell.data.Part.grid_x, cell.data.Part.grid_y)))
         return;
 
-    TC_LOG_DEBUG("maps", "Switch object %s from grid[%u, %u] %u", obj->GetGUID().ToString().c_str(), cell.data.Part.grid_x, cell.data.Part.grid_y, on);
+    if (sLog->ShouldLog("maps", LOG_LEVEL_DEBUG))
+    {
+        // Extract bitfield values
+        uint32 const grid_x = cell.data.Part.grid_x;
+        uint32 const grid_y = cell.data.Part.grid_y;
+
+        TC_LOG_DEBUG("maps", "Switch object %s from grid[%u, %u] %u", obj->GetGUID().ToString().c_str(), grid_x, grid_y, on);
+    }
+
     NGridType *ngrid = getNGrid(cell.GridX(), cell.GridY());
     ASSERT(ngrid != NULL);
 
@@ -367,7 +375,15 @@ void Map::SwitchGridContainers(GameObject* obj, bool on)
     if (!IsGridLoaded(GridCoord(cell.data.Part.grid_x, cell.data.Part.grid_y)))
         return;
 
-    TC_LOG_DEBUG("maps", "Switch object %s from grid[%u, %u] %u", obj->GetGUID().ToString().c_str(), cell.data.Part.grid_x, cell.data.Part.grid_y, on);
+    if (sLog->ShouldLog("maps", LOG_LEVEL_DEBUG))
+    {
+        // Extract bitfield values
+        uint32 const grid_x = cell.data.Part.grid_x;
+        uint32 const grid_y = cell.data.Part.grid_y;
+
+        TC_LOG_DEBUG("maps", "Switch object %s from grid[%u, %u] %u", obj->GetGUID().ToString().c_str(), grid_x, grid_y, on);
+    }
+
     NGridType *ngrid = getNGrid(cell.GridX(), cell.GridY());
     ASSERT(ngrid != NULL);
 
@@ -640,6 +656,8 @@ void Map::VisitNearbyCellsOf(WorldObject* obj, TypeContainerVisitor<Trinity::Obj
 
 void Map::Update(const uint32 t_diff)
 {
+    GetEluna()->current_thread_id = std::this_thread::get_id();
+
     _dynamicTree.update(t_diff);
     /// update worldsessions for existing players
     for (m_mapRefIter = m_mapRefManager.begin(); m_mapRefIter != m_mapRefManager.end(); ++m_mapRefIter)
@@ -715,6 +733,8 @@ void Map::Update(const uint32 t_diff)
         ProcessRelocationNotifies(t_diff);
 
     sScriptMgr->OnMapUpdate(this, t_diff);
+
+    GetEluna()->current_thread_id = Eluna::main_thread_id;
 }
 
 struct ResetNotifier
@@ -2609,9 +2629,13 @@ void Map::AddObjectToRemoveList(WorldObject* obj)
 
 #ifdef ELUNA
     if (Creature* creature = obj->ToCreature())
-        sEluna->OnRemove(creature);
+    {
+        ElunaDo(creature)->OnRemove(creature);
+    }
     else if (GameObject* gameobject = obj->ToGameObject())
-        sEluna->OnRemove(gameobject);
+    {
+        ElunaDo(gameobject)->OnRemove(gameobject);
+    }
 #endif
 
     obj->CleanupsBeforeDelete(false);                            // remove or simplify at least cross referenced links
@@ -3069,17 +3093,32 @@ void InstanceMap::CreateInstanceData(bool load)
     if (i_data != NULL)
         return;
 
-    InstanceTemplate const* mInstance = sObjectMgr->GetInstanceTemplate(GetId());
-    if (mInstance)
+    bool isElunaAI = false;
+
+#ifdef ELUNA
+    i_data = GetEluna()->GetInstanceData(this);
+    if (i_data)
+        isElunaAI = true;
+#endif
+
+    // if Eluna AI was fetched succesfully we should not call CreateInstanceData nor set the unused scriptID
+    if (!isElunaAI)
     {
-        i_script_id = mInstance->ScriptId;
-        i_data = sScriptMgr->CreateInstanceData(this);
+        InstanceTemplate const* mInstance = sObjectMgr->GetInstanceTemplate(GetId());
+        if (mInstance)
+        {
+            i_script_id = mInstance->ScriptId;
+            i_data = sScriptMgr->CreateInstanceData(this);
+        }
     }
 
     if (!i_data)
         return;
 
-    i_data->Initialize();
+    // use mangos behavior if we are dealing with Eluna AI
+    // initialize should then be called only if load is false
+    if (!isElunaAI || !load)
+        i_data->Initialize();
 
     if (load)
     {
@@ -3096,7 +3135,7 @@ void InstanceMap::CreateInstanceData(bool load)
             i_data->SetCompletedEncountersMask(fields[1].GetUInt32());
             if (!data.empty())
             {
-                TC_LOG_DEBUG("maps", "Loading instance data for `%s` with id %u", sObjectMgr->GetScriptName(i_script_id), i_InstanceId);
+                TC_LOG_DEBUG("maps", "Loading instance data for `%s` with id %u", isElunaAI ? "ElunaAI" : sObjectMgr->GetScriptName(i_script_id), i_InstanceId);
                 i_data->Load(data.c_str());
             }
         }

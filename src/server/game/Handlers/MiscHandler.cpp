@@ -28,7 +28,6 @@
 #include "ObjectMgr.h"
 #include "GuildMgr.h"
 #include "WorldSession.h"
-#include "LootMgr.h"
 #include "Chat.h"
 #include "zlib.h"
 #include "ObjectAccessor.h"
@@ -37,7 +36,6 @@
 #include "OutdoorPvP.h"
 #include "SocialMgr.h"
 #include "AccountMgr.h"
-#include "CreatureAI.h"
 #include "DBCEnums.h"
 #include "ScriptMgr.h"
 #include "MapManager.h"
@@ -76,7 +74,7 @@ void WorldSession::HandleRepopRequestOpcode(WorldPacket& recvData)
     }
 
 #ifdef ELUNA
-    sEluna->OnRepop(GetPlayer());
+    sEluna("OnRepop")->OnRepop(GetPlayer());
 #endif
 
     //this is spirit release confirm?
@@ -182,11 +180,11 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recvData)
 #ifdef ELUNA
         else if (item)
         {
-            sEluna->HandleGossipSelectOption(GetPlayer(), item, GetPlayer()->PlayerTalkClass->GetGossipOptionSender(gossipListId), GetPlayer()->PlayerTalkClass->GetGossipOptionAction(gossipListId), code);
+            sEluna("HandleGossipSelectOption_item")->HandleGossipSelectOption(GetPlayer(), item, GetPlayer()->PlayerTalkClass->GetGossipOptionSender(gossipListId), GetPlayer()->PlayerTalkClass->GetGossipOptionAction(gossipListId), code);
         }
         else if (_player->GetGUID() == guid && menuId == _player->PlayerTalkClass->GetGossipMenu().GetMenuId())
         {
-            sEluna->HandleGossipSelectOption(GetPlayer(), menuId, GetPlayer()->PlayerTalkClass->GetGossipOptionSender(gossipListId), GetPlayer()->PlayerTalkClass->GetGossipOptionAction(gossipListId), code);
+            sEluna("HandleGossipSelectOption_player")->HandleGossipSelectOption(GetPlayer(), menuId, GetPlayer()->PlayerTalkClass->GetGossipOptionSender(gossipListId), GetPlayer()->PlayerTalkClass->GetGossipOptionAction(gossipListId), code);
         }
 #endif
         else
@@ -207,11 +205,11 @@ void WorldSession::HandleGossipSelectOptionOpcode(WorldPacket& recvData)
 #ifdef ELUNA
         else if (_player->GetGUID() == guid && menuId == _player->PlayerTalkClass->GetGossipMenu().GetMenuId())
         {
-            sEluna->HandleGossipSelectOption(GetPlayer(), menuId, GetPlayer()->PlayerTalkClass->GetGossipOptionSender(gossipListId), GetPlayer()->PlayerTalkClass->GetGossipOptionAction(gossipListId), code);
+            sEluna("HandleGossipSelectOption_player")->HandleGossipSelectOption(GetPlayer(), menuId, GetPlayer()->PlayerTalkClass->GetGossipOptionSender(gossipListId), GetPlayer()->PlayerTalkClass->GetGossipOptionAction(gossipListId), code);
         }
         else if (item)
         {
-            sEluna->HandleGossipSelectOption(GetPlayer(), item, GetPlayer()->PlayerTalkClass->GetGossipOptionSender(gossipListId), GetPlayer()->PlayerTalkClass->GetGossipOptionAction(gossipListId), code);
+            sEluna("HandleGossipSelectOption_item")->HandleGossipSelectOption(GetPlayer(), item, GetPlayer()->PlayerTalkClass->GetGossipOptionSender(gossipListId), GetPlayer()->PlayerTalkClass->GetGossipOptionAction(gossipListId), code);
         }
 #endif
         else
