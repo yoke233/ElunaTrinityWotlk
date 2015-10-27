@@ -161,6 +161,7 @@ enum WorldBoolConfigs
     CONFIG_ALLOW_TRACK_BOTH_RESOURCES,
     CONFIG_CALCULATE_CREATURE_ZONE_AREA_DATA,
     CONFIG_CALCULATE_GAMEOBJECT_ZONE_AREA_DATA,
+    CONFIG_RESET_DUEL_COOLDOWNS,
     BOOL_CONFIG_VALUE_COUNT
 };
 
@@ -373,6 +374,7 @@ enum Rates
     RATE_DROP_ITEM_REFERENCED_AMOUNT,
     RATE_DROP_MONEY,
     RATE_XP_KILL,
+    RATE_XP_BG_KILL,
     RATE_XP_QUEST,
     RATE_XP_EXPLORE,
     RATE_REPAIRCOST,
@@ -760,6 +762,8 @@ class World
         void   ResetEventSeasonalQuests(uint16 event_id);
 
         void ReloadRBAC();
+
+        void RemoveOldCorpses();
 
     protected:
         void _UpdateGameTime();
