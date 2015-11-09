@@ -934,7 +934,13 @@ GameObjectAI* ScriptMgr::GetGameObjectAI(GameObject* gameobject)
 {
     ASSERT(gameobject);
 #ifdef ELUNA
-    ElunaDo(gameobject)->OnSpawn(gameobject);
+    if (Map* map = gameobject->FindMap())
+    {
+        GameObjectAI* luaAI = map->GetEluna()->GetAI(gameobject);
+        map->GetEluna()->OnSpawn(gameobject);
+        if (luaAI)
+            return luaAI;
+    }
 #endif
 
     GET_SCRIPT_RET(GameObjectScript, gameobject->GetScriptId(), tmpscript, NULL);
